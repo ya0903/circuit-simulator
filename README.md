@@ -8,9 +8,7 @@ This project demonstrates the crossover between **electrical engineering** and *
 
 ---
 ##Site
-```css
-@import url("https://cdn.jsdelivr.net/gh/ya0903/NetFin@main/netfin.css");
-```
+https://ya0903.github.io/circuit-simulator/
 
 ---
 ## ✨ Features
