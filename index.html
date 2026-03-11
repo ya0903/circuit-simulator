@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive browser-based circuit simulator with series and parallel layouts, manual wiring, meters and live calculations." />
+  <title>Circuit Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <p class="eyebrow">Engineering + Programming</p>
+        <h1>Circuit Simulator</h1>
+        <p class="sidebar-copy">
+          Build simple circuits in the browser with cleaner symbols, sharper rendering, snap-to-grid movement,
+          right-angle wires, lock points, undo support and live current, voltage and power calculations.
+        </p>
+      </div>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Add Components</h2>
+          <p>Search or click to place a component on the board.</p>
+        </div>
+
+        <div class="component-search-wrap">
+          <input id="componentSearch" type="text" placeholder="Search components, for example resistor, capacitor or diode" />
+        </div>
+
+        <div class="control-grid" id="componentButtons">
+          <button type="button" data-type="battery">Add Battery</button>
+          <button type="button" data-type="resistor">Add Resistor</button>
+          <button type="button" data-type="led">Add LED</button>
+          <button type="button" data-type="switch">Add Switch</button>
+          <button type="button" data-type="capacitor">Add Capacitor</button>
+          <button type="button" data-type="inductor">Add Inductor</button>
+          <button type="button" data-type="diode">Add Diode</button>
+          <button type="button" data-type="ammeter">Add Ammeter</button>
+          <button type="button" data-type="voltmeter">Add Voltmeter</button>
+          <button type="button" data-type="junction">Add Junction Node</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Tools</h2>
+          <p>Layout, wire and simulate the circuit.</p>
+        </div>
+        <div class="control-grid">
+          <button id="wireModeBtn" class="button-accent" type="button">Wire Mode: Off</button>
+          <button id="lockPointBtn" type="button">Lock Point Mode: Off</button>
+          <button id="undoBtn" type="button">Undo</button>
+          <button id="seriesLayoutBtn" type="button">Auto Layout Series</button>
+          <button id="parallelLayoutBtn" type="button">Auto Layout Parallel</button>
+          <button id="simulateBtn" class="button-success" type="button">Run Simulation</button>
+          <button id="clearWiresBtn" type="button">Clear Wires</button>
+          <button id="clearBtn" class="button-danger" type="button">Clear Everything</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Selected Component</h2>
+          <p>Edit values for the currently selected component.</p>
+        </div>
+        <div id="selectedPanel" class="selected-panel empty-state">
+          Click a component on the board to edit it.
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Build Guide</h2>
+          <p>A quick way to test the simulator.</p>
+        </div>
+        <ol class="guide-list">
+          <li>Add a battery</li>
+          <li>Add a resistor, capacitor, inductor or LED</li>
+          <li>Turn on wire mode</li>
+          <li>Use lock point mode to place custom corners for wires</li>
+          <li>Run the simulation and inspect the readings</li>
+        </ol>
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <header class="workspace-header">
+        <div>
+          <p class="eyebrow">Live Workspace</p>
+          <h2 class="workspace-title">Breadboard-style schematic canvas</h2>
+        </div>
+        <div class="workspace-badges">
+          <span class="badge">High DPI Canvas</span>
+          <span class="badge">Snap to Grid</span>
+          <span class="badge">Right-angle Wiring</span>
+        </div>
+      </header>
+
+      <section class="canvas-panel">
+        <div class="canvas-toolbar">
+          <div class="canvas-toolbar-text">
+            <strong>Tip:</strong>
+            Drag components to reposition them. In wire mode, click one terminal, place optional lock points and then click another terminal to build your own right-angle paths.
+          </div>
+          <div class="canvas-toolbar-status">
+            <span class="badge badge-soft" id="wireStatusBadge">Wire Mode Off</span>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="canvas"></canvas>
+        </div>
+      </section>
+
+      <section class="explanation-panel" id="explanation">
+        Add a battery and at least one load, then wire everything into a closed path. Voltmeters can be attached across two components by selecting the voltmeter and setting its probe targets.
+      </section>
+
+      <section class="stats-grid" aria-label="Circuit statistics">
+        <article class="stat-card">
+          <span class="stat-label">Supply Voltage</span>
+          <strong class="stat-value" id="supplyVoltage">0 V</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Equivalent Resistance</span>
+          <strong class="stat-value" id="equivalentResistance">0 Ω</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Total Current</span>
+          <strong class="stat-value" id="totalCurrent">0 A</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Total Power</span>
+          <strong class="stat-value" id="totalPower">0 W</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Circuit Type</span>
+          <strong class="stat-value" id="circuitType">Unknown</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Circuit Status</span>
+          <strong class="stat-value" id="circuitStatus">Open</strong>
+        </article>
+      </section>
+
+      <section class="readings-panel">
+        <div class="panel-heading panel-heading-inline">
+          <h2>Component Readings</h2>
+          <p>Live measurements and estimated values for each component.</p>
+        </div>
+        <div id="componentBreakdown" class="readings-list empty-state">No components yet.</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
