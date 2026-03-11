@@ -7,7 +7,12 @@ Users can build simple electrical circuits, connect components with wires and se
 This project demonstrates the crossover between **electrical engineering** and **software development** using JavaScript and HTML5 canvas.
 
 ---
+##Site
+```css
+@import url("https://cdn.jsdelivr.net/gh/ya0903/NetFin@main/netfin.css");
+```
 
+---
 ## ✨ Features
 
 ### 🧩 Circuit Building
